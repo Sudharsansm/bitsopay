@@ -1,0 +1,21 @@
+[Unit]
+Description=Bitsopay payment link server
+After=network.target
+
+[Service]
+User=bitsopay
+Group=bitsopay
+EnvironmentFile=/etc/bitsopay/env
+Environment=BITSOPAY_DB=/var/lib/bitsopay/payments.db BITSOPAY_LOG_LEVEL=INFO PORT=8080
+ExecStart=/opt/bitsopay/venv/bin/gunicorn -c /opt/bitsopay/gunicorn.conf.py "bitsopay.server:create_app()"
+Restart=on-failure
+RestartSec=3
+StateDirectory=bitsopay
+NoNewPrivileges=true
+ProtectSystem=strict
+ProtectHome=true
+PrivateTmp=true
+ReadWritePaths=/var/lib/bitsopay
+
+[Install]
+WantedBy=multi-user.target

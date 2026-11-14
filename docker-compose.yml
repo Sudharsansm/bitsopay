@@ -1,0 +1,17 @@
+services:
+  bitsopay:
+    build: .
+    image: bitsopay:local
+    restart: unless-stopped
+    env_file: .env
+    ports:
+      - "127.0.0.1:8080:8080"   # expose publicly only through your HTTPS reverse proxy
+    volumes:
+      - bitsopay-data:/data
+    read_only: true
+    tmpfs: [/tmp]
+    cap_drop: [ALL]
+    security_opt: ["no-new-privileges:true"]
+
+volumes:
+  bitsopay-data:
