@@ -141,7 +141,7 @@ class StatelessLinks:
             raise ValidationError("expires_in is too large")
         nonce = secrets.token_bytes(_NONCE)
         plain = struct.pack(">II", paise, exp)
-        ct = bytes(a ^ b for a, b in zip(plain, self._stream(nonce)))
+        ct = bytes(a ^ b for a, b in zip(plain, self._stream(nonce), strict=True))
         raw = nonce + ct + self._tag(nonce, ct)
         body = base64.b32encode(raw).decode("ascii").rstrip("=")
         ref = self.prefix + body
@@ -168,7 +168,7 @@ class StatelessLinks:
         nonce, ct, tag = raw[:_NONCE], raw[_NONCE : _NONCE + _DATA], raw[_NONCE + _DATA :]
         if not hmac.compare_digest(tag, self._tag(nonce, ct)):
             raise SignatureError("Invalid reference")
-        paise, exp = struct.unpack(">II", bytes(a ^ b for a, b in zip(ct, self._stream(nonce))))
+        paise, exp = struct.unpack(">II", bytes(a ^ b for a, b in zip(ct, self._stream(nonce), strict=True)))
         if exp and self.clock() > exp:
             raise LinkExpiredError("This payment link has expired")
         payment = UPIPayment(

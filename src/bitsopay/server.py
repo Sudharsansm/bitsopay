@@ -163,7 +163,7 @@ def _expires_in(data: Dict[str, Any], default: int = 86400) -> Optional[int]:
         return None
     if isinstance(value, bool) or not isinstance(value, int):
         raise ValidationError("expires_in must be a whole number of seconds (or null)")
-    return value
+    return int(value)
 
 
 def _read_json(environ: Environ) -> Dict[str, Any]:

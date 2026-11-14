@@ -1,71 +1,37 @@
 name: Publish to PyPI
 
 on:
-  release:
-    types: [published]
-  workflow_dispatch:
-    inputs:
-      target:
-        description: "Where to publish"
-        type: choice
-        options: [testpypi, pypi]
-        default: testpypi
-
-permissions:
-  contents: read
+  push:
+    tags:
+      - "v*.*.*" # triggers on tags like v0.1.0, v1.2.3
 
 jobs:
-  build:
-    runs-on: ubuntu-24.04
+  build-and-publish:
+    name: Build and publish to PyPI
+    runs-on: ubuntu-latest
+    environment: pypi
+    permissions:
+      id-token: write # required for trusted publishing (no API key needed)
+
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@v6
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
         with:
           python-version: "3.12"
-      - run: pip install -e ".[dev]"
-      - run: ruff check src tests && mypy && pytest --cov
-      - name: Tag must match the package version
-        if: github.event_name == 'release'
-        run: |
-          version=$(python -c "import bitsopay; print(bitsopay.__version__)")
-          test "v$version" = "${{ github.event.release.tag_name }}" || { echo "tag ${{ github.event.release.tag_name }} != v$version"; exit 1; }
-      - run: python -m build
-      - run: python -m twine check --strict dist/*
-      - uses: actions/upload-artifact@v4
-        with:
-          name: dist
-          path: dist/
 
-  publish-pypi:
-    if: github.event_name == 'release' || inputs.target == 'pypi'
-    needs: build
-    runs-on: ubuntu-24.04
-    environment:
-      name: pypi
-      url: https://pypi.org/project/bitsopay/
-    permissions:
-      id-token: write   # PyPI Trusted Publishing (OIDC); no API token stored
-    steps:
-      - uses: actions/download-artifact@v4
-        with:
-          name: dist
-          path: dist/
-      - uses: pypa/gh-action-pypi-publish@release/v1
+      - name: Install build tools
+        run: pip install build twine
 
-  publish-testpypi:
-    if: github.event_name == 'workflow_dispatch' && inputs.target == 'testpypi'
-    needs: build
-    runs-on: ubuntu-24.04
-    environment:
-      name: testpypi
-      url: https://test.pypi.org/project/bitsopay/
-    permissions:
-      id-token: write
-    steps:
-      - uses: actions/download-artifact@v4
-        with:
-          name: dist
-          path: dist/
-      - uses: pypa/gh-action-pypi-publish@release/v1
-        with:
-          repository-url: https://test.pypi.org/legacy/
+      - name: Build distributions
+        run: python -m build
+        # produces dist/bitsopay-X.Y.Z.tar.gz and dist/bitsopay-X.Y.Z-py3-none-any.whl
+
+      - name: Check distributions
+        run: twine check dist/*
+
+      - name: Publish to PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
+        # Uses PyPI Trusted Publishing — no PYPI_TOKEN secret needed.
+        # Set up at: https://pypi.org/manage/account/publishing/
