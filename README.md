@@ -5,8 +5,8 @@
 <p align="center"><b>Dynamic UPI QR codes and tamper-proof payment links, with no payment gateway.</b></p>
 
 <p align="center">
-  <a href="https://pypi.org/project/bitsopay/"><img alt="PyPI" src="https://img.shields.io/pypi/v/bitsopay.svg"></a>
-  <a href="https://pypi.org/project/bitsopay/"><img alt="Python" src="https://img.shields.io/pypi/pyversions/bitsopay.svg"></a>
+  <a href="https://pypi.org/project/bitsopay/"><img alt="PyPI" src="https://img.shields.io/pypi/v/bitsopay?label=PyPI&color=blue"></a>
+  <a href="https://github.com/Sudharsansm/Bitsopay/blob/main/pyproject.toml"><img alt="Python 3.11+" src="https://img.shields.io/badge/python-3.11%20%7C%203.12%20%7C%203.13-blue.svg"></a>
   <a href="https://github.com/Sudharsansm/Bitsopay/actions/workflows/ci.yml"><img alt="CI" src="https://github.com/Sudharsansm/Bitsopay/actions/workflows/ci.yml/badge.svg"></a>
   <a href="LICENSE"><img alt="License: MIT" src="https://img.shields.io/badge/license-MIT-blue.svg"></a>
   <a href="https://docs.astral.sh/ruff/"><img alt="Ruff" src="https://img.shields.io/badge/lint-ruff-261230.svg"></a>
@@ -47,7 +47,7 @@ It is a framework developed by **[Bitsophia](https://github.com/Sudharsansm)**, 
 - **Production WSGI server**: merchant API, `/health` and `/ready` probes, security headers (CSP, HSTS), request IDs,
   structured logging, admin brute-force throttling.
 - **CLI** for scripting and operations.
-- **One dependency** ([`segno`](https://pypi.org/project/segno/), pure Python). Python 3.9+. Fully typed (`mypy --strict`).
+- **One dependency** ([`segno`](https://pypi.org/project/segno/), pure Python). Python 3.11+. Fully typed (`mypy --strict`).
 
 ## Install
 
